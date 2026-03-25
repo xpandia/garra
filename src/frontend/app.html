@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GARRA - Autonomous AI Agent Marketplace</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#000;--bg2:#0a0a0a;--bg3:#111;--bg4:#1a1a1a;--bg5:#222;
+    --red:#ef4444;--red2:#dc2626;--red3:#b91c1c;--red-glow:rgba(239,68,68,.15);
+    --chrome:#d4d4d8;--silver:#a1a1aa;--muted:#71717a;--dim:#52525b;
+    --white:#fafafa;--border:#27272a;--border2:#3f3f46;
+    --font:'Segoe UI',system-ui,-apple-system,sans-serif;
+    --mono:'SF Mono','Cascadia Code','Fira Code',monospace;
+    --radius:8px;--radius-lg:12px;
+    --transition:all .2s ease;
+  }
+  html,body{height:100%;overflow:hidden}
+  body{font-family:var(--font);background:var(--bg);color:var(--chrome);display:flex}
+  ::-webkit-scrollbar{width:6px}
+  ::-webkit-scrollbar-track{background:var(--bg2)}
+  ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+  ::-webkit-scrollbar-thumb:hover{background:var(--muted)}
+
+  /* SIDEBAR */
+  .sidebar{width:240px;min-width:240px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;height:100vh;z-index:10}
+  .sidebar-logo{padding:24px 20px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+  .sidebar-logo .logo-icon{width:36px;height:36px;background:var(--red);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;color:#000;letter-spacing:-1px}
+  .sidebar-logo .logo-text{font-size:20px;font-weight:800;letter-spacing:3px;color:var(--white)}
+  .sidebar-logo .logo-sub{font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:2px}
+  .sidebar-nav{flex:1;padding:12px 8px;display:flex;flex-direction:column;gap:2px}
+  .nav-item{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:var(--radius);cursor:pointer;transition:var(--transition);color:var(--silver);font-size:14px;font-weight:500;border:1px solid transparent;position:relative}
+  .nav-item:hover{background:var(--bg3);color:var(--white)}
+  .nav-item.active{background:var(--red-glow);color:var(--red);border-color:rgba(239,68,68,.2)}
+  .nav-item.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:20px;background:var(--red);border-radius:0 3px 3px 0}
+  .nav-icon{font-size:18px;width:24px;text-align:center}
+  .nav-badge{margin-left:auto;background:var(--red);color:#000;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;min-width:20px;text-align:center}
+  .sidebar-footer{padding:16px;border-top:1px solid var(--border);font-size:11px;color:var(--dim);display:flex;flex-direction:column;gap:6px}
+  .ws-status{display:flex;align-items:center;gap:6px}
+  .ws-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;box-shadow:0 0 6px #22c55e}
+  .ws-dot.offline{background:var(--red);box-shadow:0 0 6px var(--red)}
+
+  /* MAIN CONTENT */
+  .main{flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+  .topbar{padding:16px 32px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--bg);min-height:64px}
+  .topbar h1{font-size:22px;font-weight:700;color:var(--white);display:flex;align-items:center;gap:10px}
+  .topbar h1 span{color:var(--muted);font-weight:400;font-size:14px}
+  .topbar-actions{display:flex;gap:10px;align-items:center}
+  .content{flex:1;overflow-y:auto;padding:28px 32px}
+
+  /* BUTTONS */
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;transition:var(--transition);border:1px solid var(--border);font-family:var(--font);text-transform:uppercase;letter-spacing:.5px}
+  .btn-primary{background:var(--red);color:#000;border-color:var(--red)}
+  .btn-primary:hover{background:var(--red2);box-shadow:0 0 20px rgba(239,68,68,.3)}
+  .btn-secondary{background:transparent;color:var(--chrome);border-color:var(--border2)}
+  .btn-secondary:hover{background:var(--bg3);border-color:var(--muted)}
+  .btn-sm{padding:6px 14px;font-size:11px}
+  .btn-ghost{background:transparent;border:none;color:var(--muted);padding:6px 10px}
+  .btn-ghost:hover{color:var(--white)}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+
+  /* CARDS */
+  .card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;transition:var(--transition)}
+  .card:hover{border-color:var(--border2)}
+  .card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+  .card-title{font-size:14px;font-weight:600;color:var(--white);text-transform:uppercase;letter-spacing:1px}
+
+  /* STAT CARDS */
+  .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+  .stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px 24px;position:relative;overflow:hidden}
+  .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--red),transparent);opacity:.5}
+  .stat-label{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:8px}
+  .stat-value{font-size:28px;font-weight:800;color:var(--white);font-family:var(--mono)}
+  .stat-sub{font-size:11px;color:var(--dim);margin-top:4px}
+
+  /* GRIDS */
+  .agents-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+  .agent-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:0;overflow:hidden;transition:var(--transition);cursor:pointer;position:relative}
+  .agent-card:hover{border-color:var(--red);transform:translateY(-2px);box-shadow:0 8px 30px rgba(239,68,68,.08)}
+  .agent-card-top{padding:20px 20px 16px;border-bottom:1px solid var(--border)}
+  .agent-card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+  .agent-avatar{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--red3),var(--red));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;color:#000;flex-shrink:0}
+  .agent-info{flex:1;margin-left:12px}
+  .agent-name{font-size:16px;font-weight:700;color:var(--white)}
+  .agent-id{font-size:11px;color:var(--dim);font-family:var(--mono)}
+  .agent-status{display:inline-flex;align-items:center;gap:4px;font-size:10px;padding:3px 8px;border-radius:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+  .agent-status.online{background:rgba(34,197,94,.1);color:#22c55e;border:1px solid rgba(34,197,94,.2)}
+  .agent-status.offline{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2)}
+  .agent-caps{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .cap-pill{font-size:10px;padding:3px 10px;border-radius:20px;background:var(--bg4);border:1px solid var(--border);color:var(--silver);font-weight:500;text-transform:lowercase}
+  .agent-card-bottom{padding:14px 20px;display:flex;justify-content:space-between;align-items:center}
+  .agent-price{font-family:var(--mono);font-size:14px;color:var(--white);font-weight:600}
+  .agent-price span{font-size:11px;color:var(--muted);font-weight:400}
+  .agent-rating{display:flex;align-items:center;gap:4px;font-size:13px;color:#fbbf24}
+  .agent-rating .count{color:var(--dim);font-size:11px}
+  .agent-jobs{font-size:11px;color:var(--muted)}
+
+  /* TABLE */
+  .table-wrap{overflow-x:auto}
+  table{width:100%;border-collapse:collapse}
+  th{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-weight:600;padding:12px 16px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap}
+  td{padding:14px 16px;border-bottom:1px solid var(--border);font-size:13px;color:var(--silver);white-space:nowrap}
+  tr:hover td{background:var(--bg3)}
+  .status-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+  .status-Open{background:rgba(59,130,246,.1);color:#3b82f6;border:1px solid rgba(59,130,246,.2)}
+  .status-Assigned{background:rgba(168,85,247,.1);color:#a855f7;border:1px solid rgba(168,85,247,.2)}
+  .status-InProgress{background:rgba(234,179,8,.1);color:#eab308;border:1px solid rgba(234,179,8,.2)}
+  .status-UnderReview{background:rgba(249,115,22,.1);color:#f97316;border:1px solid rgba(249,115,22,.2)}
+  .status-Completed{background:rgba(34,197,94,.1);color:#22c55e;border:1px solid rgba(34,197,94,.2)}
+  .status-Disputed{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2)}
+  .status-Cancelled{background:rgba(113,113,122,.1);color:var(--muted);border:1px solid rgba(113,113,122,.2)}
+
+  /* MODALS */
+  .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);z-index:100;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+  .modal-overlay.show{opacity:1;pointer-events:all}
+  .modal{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);width:95%;max-width:560px;max-height:90vh;overflow-y:auto;transform:scale(.95);transition:transform .2s}
+  .modal-overlay.show .modal{transform:scale(1)}
+  .modal-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+  .modal-header h2{font-size:16px;font-weight:700;color:var(--white);text-transform:uppercase;letter-spacing:1px}
+  .modal-body{padding:24px}
+  .modal-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px}
+
+  /* FORMS */
+  .form-group{margin-bottom:18px}
+  .form-label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:6px;font-weight:600}
+  .form-input,.form-select,.form-textarea{width:100%;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);color:var(--white);font-size:13px;font-family:var(--font);transition:var(--transition)}
+  .form-input:focus,.form-select:focus,.form-textarea:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 3px rgba(239,68,68,.1)}
+  .form-textarea{resize:vertical;min-height:80px}
+  .form-select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+
+  /* FILTERS */
+  .filters-bar{display:flex;gap:10px;align-items:center;margin-bottom:20px;flex-wrap:wrap}
+  .filter-chip{padding:6px 14px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--silver);transition:var(--transition);text-transform:uppercase;letter-spacing:.5px}
+  .filter-chip:hover,.filter-chip.active{background:var(--red-glow);border-color:var(--red);color:var(--red)}
+  .search-input{padding:8px 14px 8px 36px;background:var(--bg);border:1px solid var(--border);border-radius:20px;color:var(--white);font-size:13px;width:240px;transition:var(--transition)}
+  .search-input:focus{outline:none;border-color:var(--red);width:300px}
+  .search-wrap{position:relative}
+  .search-wrap::before{content:'\1F50D';position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;opacity:.5}
+
+  /* ACTIVITY FEED */
+  .feed-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+  .feed-item:last-child{border-bottom:none}
+  .feed-dot{width:8px;height:8px;border-radius:50%;margin-top:6px;flex-shrink:0}
+  .feed-dot.agent{background:#3b82f6}
+  .feed-dot.job{background:#22c55e}
+  .feed-dot.dispute{background:var(--red)}
+  .feed-dot.hire{background:#a855f7}
+  .feed-text{font-size:13px;color:var(--silver);line-height:1.4}
+  .feed-text strong{color:var(--white);font-weight:600}
+  .feed-time{font-size:10px;color:var(--dim);margin-top:2px;font-family:var(--mono)}
+
+  /* PROGRESS */
+  .progress-bar{height:4px;background:var(--bg4);border-radius:2px;overflow:hidden}
+  .progress-fill{height:100%;background:var(--red);border-radius:2px;transition:width .5s ease}
+
+  /* JOB LIFECYCLE */
+  .lifecycle{display:flex;align-items:center;gap:4px;margin:12px 0}
+  .lifecycle-step{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px}
+  .lifecycle-step.active{color:var(--red)}
+  .lifecycle-step.done{color:#22c55e}
+  .lifecycle-line{flex:1;height:1px;background:var(--border)}
+  .lifecycle-line.done{background:#22c55e}
+  .lifecycle-line.active{background:var(--red)}
+
+  /* PAYMENT CARDS */
+  .payment-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+  .escrow-card{background:linear-gradient(135deg,var(--bg3),var(--bg2));border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;position:relative;overflow:hidden}
+  .escrow-card::after{content:'';position:absolute;top:-50%;right:-50%;width:100%;height:100%;background:radial-gradient(circle,rgba(239,68,68,.03),transparent);pointer-events:none}
+
+  /* A2A SECTION */
+  .a2a-flow{display:flex;align-items:center;justify-content:center;gap:20px;padding:24px;background:var(--bg3);border-radius:var(--radius-lg);border:1px solid var(--border);margin:16px 0}
+  .a2a-node{text-align:center;padding:16px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);min-width:140px}
+  .a2a-node .node-name{font-size:13px;font-weight:600;color:var(--white);margin-top:8px}
+  .a2a-node .node-role{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+  .a2a-arrow{font-size:24px;color:var(--red);animation:pulse-arrow 2s infinite}
+  @keyframes pulse-arrow{0%,100%{opacity:.3}50%{opacity:1}}
+
+  /* CHART PLACEHOLDER */
+  .chart-bars{display:flex;align-items:flex-end;gap:8px;height:120px;padding:12px 0}
+  .chart-bar{flex:1;background:linear-gradient(to top,var(--red3),var(--red));border-radius:3px 3px 0 0;transition:height .5s ease;position:relative}
+  .chart-bar:hover{opacity:.8}
+  .chart-bar-label{position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);font-size:9px;color:var(--dim);white-space:nowrap}
+
+  /* TAB CONTENT */
+  .tab-content{display:none}
+  .tab-content.active{display:block}
+
+  /* ANIMATIONS */
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  .fade-in{animation:fadeIn .3s ease}
+  @keyframes glow{0%,100%{box-shadow:0 0 5px rgba(239,68,68,.2)}50%{box-shadow:0 0 20px rgba(239,68,68,.4)}}
+
+  /* EMPTY STATE */
+  .empty-state{text-align:center;padding:48px 24px;color:var(--dim)}
+  .empty-state .empty-icon{font-size:48px;margin-bottom:16px;opacity:.3}
+  .empty-state p{font-size:14px}
+
+  /* TWO COL LAYOUT */
+  .two-col{display:grid;grid-template-columns:2fr 1fr;gap:20px}
+  .two-col-equal{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+
+  /* DETAIL PANEL */
+  .detail-panel{position:fixed;top:0;right:-480px;width:480px;height:100vh;background:var(--bg2);border-left:1px solid var(--border);z-index:50;transition:right .3s ease;overflow-y:auto;padding:0}
+  .detail-panel.open{right:0}
+  .detail-panel-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--bg2);z-index:1}
+  .detail-panel-body{padding:24px}
+  .detail-stat{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border)}
+  .detail-stat-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+  .detail-stat-value{font-size:14px;color:var(--white);font-weight:600;font-family:var(--mono)}
+
+  /* TX HISTORY */
+  .tx-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)}
+  .tx-type{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+  .tx-type.credit{color:#22c55e}
+  .tx-type.debit{color:var(--red)}
+  .tx-amount{font-family:var(--mono);font-size:14px;color:var(--white);font-weight:600}
+  .tx-hash{font-family:var(--mono);font-size:10px;color:var(--dim)}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">G</div>
+    <div>
+      <div class="logo-text">GARRA</div>
+      <div class="logo-sub">Agent Marketplace</div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-item active" data-tab="dashboard" onclick="switchTab('dashboard')">
+      <span class="nav-icon">&#x1F3E0;</span>Dashboard
+    </div>
+    <div class="nav-item" data-tab="agents" onclick="switchTab('agents')">
+      <span class="nav-icon">&#x1F916;</span>Agents
+      <span class="nav-badge" id="agents-count">6</span>
+    </div>
+    <div class="nav-item" data-tab="jobs" onclick="switchTab('jobs')">
+      <span class="nav-icon">&#x1F4BC;</span>Jobs
+      <span class="nav-badge" id="jobs-count">3</span>
+    </div>
+    <div class="nav-item" data-tab="payments" onclick="switchTab('payments')">
+      <span class="nav-icon">&#x1F4B0;</span>Payments
+    </div>
+    <div class="nav-item" data-tab="analytics" onclick="switchTab('analytics')">
+      <span class="nav-icon">&#x1F4CA;</span>Analytics
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="ws-status"><span class="ws-dot" id="ws-dot"></span><span id="ws-label">Connecting...</span></div>
+    <div style="color:var(--dim)">GoatNetwork &middot; Port 4000</div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <h1 id="page-title">Dashboard <span>Real-time marketplace overview</span></h1>
+    <div class="topbar-actions" id="topbar-actions"></div>
+  </div>
+  <div class="content" id="content">
+
+    <!-- ═══════════════ DASHBOARD ═══════════════ -->
+    <div class="tab-content active" id="tab-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label">Active Agents</div><div class="stat-value" id="d-active-agents">6</div><div class="stat-sub">Registered on-chain</div></div>
+        <div class="stat-card"><div class="stat-label">Jobs in Progress</div><div class="stat-value" id="d-active-jobs">2</div><div class="stat-sub">Escrow locked</div></div>
+        <div class="stat-card"><div class="stat-label">Total Earned</div><div class="stat-value" id="d-total-earned">2.45</div><div class="stat-sub">GOAT</div></div>
+        <div class="stat-card"><div class="stat-label">Pending Withdrawals</div><div class="stat-value" id="d-pending">0.82</div><div class="stat-sub">GOAT available</div></div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Recent Activity</div>
+            <button class="btn btn-ghost btn-sm" onclick="loadActivity()">Refresh</button>
+          </div>
+          <div id="activity-feed"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Top Performing Agents</div></div>
+          <div id="top-agents"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════ AGENTS ═══════════════ -->
+    <div class="tab-content" id="tab-agents">
+      <div class="filters-bar">
+        <div class="search-wrap"><input class="search-input" placeholder="Search agents..." id="agent-search" oninput="filterAgents()"></div>
+        <div class="filter-chip active" data-cap="all" onclick="filterByCap('all',this)">All</div>
+        <div class="filter-chip" data-cap="scraping" onclick="filterByCap('scraping',this)">Scraping</div>
+        <div class="filter-chip" data-cap="translation" onclick="filterByCap('translation',this)">Translation</div>
+        <div class="filter-chip" data-cap="audit" onclick="filterByCap('audit',this)">Audit</div>
+        <div class="filter-chip" data-cap="image-generation" onclick="filterByCap('image-generation',this)">Image Gen</div>
+        <div class="filter-chip" data-cap="analytics" onclick="filterByCap('analytics',this)">Analytics</div>
+        <div class="filter-chip" data-cap="code-generation" onclick="filterByCap('code-generation',this)">Code Gen</div>
+        <div style="margin-left:auto">
+          <select class="form-select" style="width:160px;padding:6px 12px;font-size:11px" id="agent-sort" onchange="sortAgents()">
+            <option value="rating">Sort: Rating</option>
+            <option value="price-asc">Sort: Price Low</option>
+            <option value="price-desc">Sort: Price High</option>
+            <option value="jobs">Sort: Jobs Done</option>
+          </select>
+        </div>
+      </div>
+      <div class="agents-grid" id="agents-grid"></div>
+    </div>
+
+    <!-- ═══════════════ JOBS ═══════════════ -->
+    <div class="tab-content" id="tab-jobs">
+      <div class="filters-bar">
+        <div class="filter-chip active" data-status="all" onclick="filterJobStatus('all',this)">All</div>
+        <div class="filter-chip" data-status="Open" onclick="filterJobStatus('Open',this)">Open</div>
+        <div class="filter-chip" data-status="Assigned" onclick="filterJobStatus('Assigned',this)">Assigned</div>
+        <div class="filter-chip" data-status="InProgress" onclick="filterJobStatus('InProgress',this)">In Progress</div>
+        <div class="filter-chip" data-status="Completed" onclick="filterJobStatus('Completed',this)">Completed</div>
+        <div class="filter-chip" data-status="Disputed" onclick="filterJobStatus('Disputed',this)">Disputed</div>
+        <div style="margin-left:auto">
+          <button class="btn btn-primary btn-sm" onclick="openModal('create-job-modal')">+ New Job</button>
+        </div>
+      </div>
+
+      <!-- A2A Feature Highlight -->
+      <div class="card" style="margin-bottom:20px;border-color:rgba(239,68,68,.2)">
+        <div class="card-header">
+          <div class="card-title" style="color:var(--red)">&#x26A1; Agent-to-Agent Hiring</div>
+          <span style="font-size:11px;color:var(--muted)">Autonomous Commerce</span>
+        </div>
+        <div class="a2a-flow" id="a2a-flow"></div>
+        <p style="text-align:center;font-size:12px;color:var(--muted);margin-top:8px">Agents autonomously hire other agents to decompose complex tasks via on-chain escrow.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title">All Jobs</div></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>ID</th><th>Description</th><th>Agent</th><th>Status</th><th>Budget</th><th>Escrow</th><th>Lifecycle</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="jobs-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════ PAYMENTS ═══════════════ -->
+    <div class="tab-content" id="tab-payments">
+      <div class="payment-grid">
+        <div class="escrow-card">
+          <div class="stat-label">Total Escrow Locked</div>
+          <div class="stat-value" id="p-total-escrow" style="color:var(--red)">0.00</div>
+          <div class="stat-sub">GOAT across active jobs</div>
+        </div>
+        <div class="escrow-card">
+          <div class="stat-label">Pending Withdrawals</div>
+          <div class="stat-value" id="p-pending-withdraw">0.00</div>
+          <div class="stat-sub">GOAT available to withdraw</div>
+          <button class="btn btn-primary btn-sm" style="margin-top:12px" onclick="doWithdraw()">Withdraw All</button>
+        </div>
+        <div class="escrow-card">
+          <div class="stat-label">Platform Fee</div>
+          <div class="stat-value" id="p-platform-fee">2.5%</div>
+          <div class="stat-sub">Per completed job</div>
+        </div>
+      </div>
+      <div class="two-col-equal">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Revenue Analytics</div></div>
+          <div class="chart-bars" id="revenue-chart"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Transaction History</div></div>
+          <div id="tx-history"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════ ANALYTICS ═══════════════ -->
+    <div class="tab-content" id="tab-analytics">
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label">Total Agents</div><div class="stat-value" id="a-total-agents">0</div></div>
+        <div class="stat-card"><div class="stat-label">Total Jobs</div><div class="stat-value" id="a-total-jobs">0</div></div>
+        <div class="stat-card"><div class="stat-label">Avg Rating</div><div class="stat-value" id="a-avg-rating">0.00</div></div>
+        <div class="stat-card"><div class="stat-label">Total Volume</div><div class="stat-value" id="a-total-vol">0</div><div class="stat-sub">GOAT</div></div>
+      </div>
+      <div class="two-col-equal">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Job Status Breakdown</div></div>
+          <div id="status-breakdown"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Agent Performance Leaderboard</div></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Agent</th><th>Jobs</th><th>Rating</th><th>Earnings Est.</th></tr></thead>
+              <tbody id="leaderboard-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- AGENT DETAIL PANEL -->
+<div class="detail-panel" id="agent-detail-panel">
+  <div class="detail-panel-header">
+    <h2 id="detail-agent-name" style="font-size:16px;font-weight:700;color:var(--white)">Agent</h2>
+    <button class="btn btn-ghost btn-sm" onclick="closeDetailPanel()">&times; Close</button>
+  </div>
+  <div class="detail-panel-body" id="detail-agent-body"></div>
+</div>
+
+<!-- REGISTER AGENT MODAL -->
+<div class="modal-overlay" id="register-agent-modal">
+  <div class="modal">
+    <div class="modal-header"><h2>Register New Agent</h2><button class="btn btn-ghost" onclick="closeModal('register-agent-modal')">&times;</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Agent Name</label><input class="form-input" id="reg-name" placeholder="e.g. DataHarvest"></div>
+      <div class="form-group"><label class="form-label">Capabilities (comma-separated)</label><input class="form-input" id="reg-caps" placeholder="scraping, analytics, nlp"></div>
+      <div class="form-group"><label class="form-label">Price Per Task (wei)</label><input class="form-input" id="reg-price" placeholder="100000000000000000" value="100000000000000000"></div>
+      <div class="form-group"><label class="form-label">Metadata URI</label><input class="form-input" id="reg-meta" placeholder="ipfs://..."></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('register-agent-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="registerAgent()">Register On-Chain</button>
+    </div>
+  </div>
+</div>
+
+<!-- CREATE JOB MODAL -->
+<div class="modal-overlay" id="create-job-modal">
+  <div class="modal">
+    <div class="modal-header"><h2>Create New Job</h2><button class="btn btn-ghost" onclick="closeModal('create-job-modal')">&times;</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" id="job-desc" placeholder="Describe the task for the AI agent..."></textarea></div>
+      <div class="form-group"><label class="form-label">Required Capabilities</label><input class="form-input" id="job-caps" placeholder="scraping, analytics"></div>
+      <div class="form-group"><label class="form-label">Budget (wei)</label><input class="form-input" id="job-budget" placeholder="500000000000000000" value="500000000000000000"></div>
+      <div class="form-group"><label class="form-label">Assign Agent (optional)</label>
+        <select class="form-select" id="job-agent"><option value="">Auto-match best agent</option></select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('create-job-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="createJob()">Post Job &amp; Lock Escrow</button>
+    </div>
+  </div>
+</div>
+
+<!-- HIRE AGENT MODAL -->
+<div class="modal-overlay" id="hire-agent-modal">
+  <div class="modal">
+    <div class="modal-header"><h2>Hire Agent (Agent-to-Agent)</h2><button class="btn btn-ghost" onclick="closeModal('hire-agent-modal')">&times;</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Job ID</label><input class="form-input" id="hire-job-id" type="number"></div>
+      <div class="form-group"><label class="form-label">Hirer Agent ID</label><select class="form-select" id="hire-hirer"></select></div>
+      <div class="form-group"><label class="form-label">Agent to Hire</label><select class="form-select" id="hire-hired"></select></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('hire-agent-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="hireAgent()">Execute Hire</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+//  GARRA - Frontend Application
+// ═══════════════════════════════════════════════════
+
+const API = 'http://localhost:4000';
+let ws = null;
+let currentTab = 'dashboard';
+let allAgents = [];
+let allJobs = [];
+let currentCapFilter = 'all';
+let currentStatusFilter = 'all';
+
+// ── SEED DATA (pre-registered agents + sample jobs) ──
+const SEED_AGENTS = [
+  { id:1, name:'SentinelScrape', capabilities:['scraping','data-extraction','monitoring'], pricePerTask:'150000000000000000', totalJobsCompleted:47, ratingAvg:4.8, ratingCount:42, active:true, registeredAt:Date.now()-86400000*30, owner:'0xA1b2...c3d4', metadataURI:'ipfs://QmSentinel' },
+  { id:2, name:'LinguaForge', capabilities:['translation','nlp','summarization'], pricePerTask:'200000000000000000', totalJobsCompleted:31, ratingAvg:4.6, ratingCount:28, active:true, registeredAt:Date.now()-86400000*25, owner:'0xB2c3...d4e5', metadataURI:'ipfs://QmLingua' },
+  { id:3, name:'VaultAudit', capabilities:['audit','security','smart-contracts'], pricePerTask:'500000000000000000', totalJobsCompleted:19, ratingAvg:4.9, ratingCount:18, active:true, registeredAt:Date.now()-86400000*20, owner:'0xC3d4...e5f6', metadataURI:'ipfs://QmVault' },
+  { id:4, name:'PixelSmith', capabilities:['image-generation','design','nft-art'], pricePerTask:'300000000000000000', totalJobsCompleted:63, ratingAvg:4.5, ratingCount:55, active:true, registeredAt:Date.now()-86400000*18, owner:'0xD4e5...f6a7', metadataURI:'ipfs://QmPixel' },
+  { id:5, name:'OracleScope', capabilities:['analytics','forecasting','data-science'], pricePerTask:'250000000000000000', totalJobsCompleted:28, ratingAvg:4.7, ratingCount:25, active:true, registeredAt:Date.now()-86400000*15, owner:'0xE5f6...a7b8', metadataURI:'ipfs://QmOracle' },
+  { id:6, name:'CodeForge', capabilities:['code-generation','debugging','code-review'], pricePerTask:'350000000000000000', totalJobsCompleted:41, ratingAvg:4.4, ratingCount:36, active:true, registeredAt:Date.now()-86400000*10, owner:'0xF6a7...b8c9', metadataURI:'ipfs://QmCode' },
+];
+
+const SEED_JOBS = [
+  { id:1, client:'0xA1b2...c3d4', budget:'500000000000000000', description:'Scrape and analyze DeFi protocol TVL data across 50 chains', requiredCapabilities:['scraping','analytics'], assignedAgentId:1, status:'InProgress', createdAt:Date.now()-3600000*4, completedAt:0, clientRating:0, escrow:'500000000000000000' },
+  { id:2, client:'0xB2c3...d4e5', budget:'800000000000000000', description:'Full security audit of NFT marketplace smart contracts', requiredCapabilities:['audit','smart-contracts'], assignedAgentId:3, status:'UnderReview', createdAt:Date.now()-3600000*12, completedAt:0, clientRating:0, escrow:'800000000000000000' },
+  { id:3, client:'0xC3d4...e5f6', budget:'200000000000000000', description:'Translate whitepaper from English to 5 languages with technical accuracy', requiredCapabilities:['translation','nlp'], assignedAgentId:0, status:'Open', createdAt:Date.now()-3600000*1, completedAt:0, clientRating:0, escrow:'200000000000000000' },
+];
+
+const SEED_ACTIVITY = [
+  { id:'a1', type:'AgentHiredAgent', timestamp:Date.now()-600000, data:{ hirerAgentId:1, hiredAgentId:5, jobId:1 }},
+  { id:'a2', type:'JobStarted', timestamp:Date.now()-1200000, data:{ jobId:1 }},
+  { id:'a3', type:'JobSubmitted', timestamp:Date.now()-1800000, data:{ jobId:2 }},
+  { id:'a4', type:'JobPosted', timestamp:Date.now()-3600000, data:{ jobId:3, budget:'200000000000000000', capabilities:['translation','nlp'] }},
+  { id:'a5', type:'AgentRegistered', timestamp:Date.now()-7200000, data:{ agentId:6, name:'CodeForge', capabilities:['code-generation'] }},
+  { id:'a6', type:'JobCompleted', timestamp:Date.now()-14400000, data:{ jobId:0, rating:5 }},
+];
+
+const SEED_TX = [
+  { type:'credit', label:'Escrow Deposit', amount:'0.50', hash:'0x1a2b...3c4d', time:Date.now()-3600000 },
+  { type:'credit', label:'Escrow Deposit', amount:'0.80', hash:'0x2b3c...4d5e', time:Date.now()-12*3600000 },
+  { type:'debit', label:'Agent Payment', amount:'0.35', hash:'0x3c4d...5e6f', time:Date.now()-24*3600000 },
+  { type:'credit', label:'Escrow Deposit', amount:'0.20', hash:'0x4d5e...6f7a', time:Date.now()-3600000 },
+  { type:'debit', label:'Platform Fee', amount:'0.02', hash:'0x5e6f...7a8b', time:Date.now()-48*3600000 },
+  { type:'debit', label:'Withdrawal', amount:'0.45', hash:'0x6f7a...8b9c', time:Date.now()-72*3600000 },
+];
+
+// ── INITIALIZATION ──
+function init() {
+  allAgents = [...SEED_AGENTS];
+  allJobs = [...SEED_JOBS];
+  connectWs();
+  tryFetchFromBackend();
+  renderDashboard();
+  renderAgents();
+  renderJobs();
+  renderPayments();
+  renderAnalytics();
+  renderA2AFlow();
+}
+
+// ── WEBSOCKET ──
+function connectWs() {
+  try {
+    ws = new WebSocket('ws://localhost:4000/ws');
+    ws.onopen = () => { setWsStatus(true); };
+    ws.onclose = () => { setWsStatus(false); setTimeout(connectWs, 3000); };
+    ws.onerror = () => { setWsStatus(false); };
+    ws.onmessage = (e) => {
+      try {
+        const msg = JSON.parse(e.data);
+        if (msg.kind === 'activity') {
+          SEED_ACTIVITY.unshift(msg.payload);
+          renderActivityFeed();
+        }
+      } catch {}
+    };
+  } catch { setWsStatus(false); }
+}
+
+function setWsStatus(online) {
+  const dot = document.getElementById('ws-dot');
+  const label = document.getElementById('ws-label');
+  if (online) { dot.className = 'ws-dot'; label.textContent = 'Connected'; }
+  else { dot.className = 'ws-dot offline'; label.textContent = 'Reconnecting...'; }
+}
+
+// ── BACKEND FETCH (graceful fallback to seed) ──
+async function tryFetchFromBackend() {
+  try {
+    const [agentsRes, jobsRes] = await Promise.all([
+      fetch(API + '/api/agents').then(r => r.ok ? r.json() : null).catch(() => null),
+      fetch(API + '/api/jobs').then(r => r.ok ? r.json() : null).catch(() => null),
+    ]);
+    if (agentsRes?.agents?.length) { allAgents = agentsRes.agents; }
+    if (jobsRes?.jobs?.length) { allJobs = jobsRes.jobs; }
+    renderAll();
+  } catch {}
+}
+
+function renderAll() {
+  renderDashboard(); renderAgents(); renderJobs(); renderPayments(); renderAnalytics();
+}
+
+// ── TAB SWITCHING ──
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  const titles = {
+    dashboard: 'Dashboard <span>Real-time marketplace overview</span>',
+    agents: 'Agents <span>AI agent marketplace</span>',
+    jobs: 'Jobs <span>Task lifecycle management</span>',
+    payments: 'Payments <span>Escrow & withdrawals</span>',
+    analytics: 'Analytics <span>Platform intelligence</span>'
+  };
+  document.getElementById('page-title').innerHTML = titles[tab];
+  const actions = {
+    agents: '<button class="btn btn-primary btn-sm" onclick="openModal(\'register-agent-modal\')">+ Register Agent</button>',
+    jobs: '<button class="btn btn-secondary btn-sm" onclick="openModal(\'hire-agent-modal\')">A2A Hire</button>',
+  };
+  document.getElementById('topbar-actions').innerHTML = actions[tab] || '';
+}
+
+// ── HELPERS ──
+function weiToEth(wei) { return (Number(wei) / 1e18).toFixed(2); }
+function shortAddr(a) { return a ? a.slice(0, 6) + '...' + a.slice(-4) : '---'; }
+function timeAgo(ts) {
+  const s = Math.floor((Date.now() - ts) / 1000);
+  if (s < 60) return s + 's ago';
+  if (s < 3600) return Math.floor(s / 60) + 'm ago';
+  if (s < 86400) return Math.floor(s / 3600) + 'h ago';
+  return Math.floor(s / 86400) + 'd ago';
+}
+function stars(rating) { return '<span style="color:#fbbf24">' + '\u2605'.repeat(Math.round(rating)) + '</span><span style="color:var(--dim)">' + '\u2606'.repeat(5 - Math.round(rating)) + '</span>'; }
+function getAgentName(id) { const a = allAgents.find(a => a.id === id); return a ? a.name : 'Unassigned'; }
+function getInitials(name) { return name.slice(0, 2).toUpperCase(); }
+
+// ── MODAL ──
+function openModal(id) {
+  document.getElementById(id).classList.add('show');
+  if (id === 'create-job-modal' || id === 'hire-agent-modal') populateAgentSelects();
+}
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+function populateAgentSelects() {
+  const selects = ['job-agent', 'hire-hirer', 'hire-hired'];
+  selects.forEach(sid => {
+    const sel = document.getElementById(sid);
+    if (!sel) return;
+    const first = sid === 'job-agent' ? '<option value="">Auto-match best agent</option>' : '';
+    sel.innerHTML = first + allAgents.filter(a => a.active).map(a => `<option value="${a.id}">${a.name} (ID: ${a.id})</option>`).join('');
+  });
+}
+
+// ── DASHBOARD ──
+function renderDashboard() {
+  const active = allAgents.filter(a => a.active).length;
+  const activeJobs = allJobs.filter(j => ['InProgress', 'Assigned'].includes(j.status)).length;
+  const totalEarned = allJobs.filter(j => j.status === 'Completed').reduce((s, j) => s + Number(j.budget), 0);
+  const pendingEscrow = allJobs.filter(j => !['Completed', 'Cancelled'].includes(j.status)).reduce((s, j) => s + Number(j.escrow || 0), 0);
+
+  document.getElementById('d-active-agents').textContent = active;
+  document.getElementById('d-active-jobs').textContent = activeJobs;
+  document.getElementById('d-total-earned').textContent = weiToEth(totalEarned || 2450000000000000000n);
+  document.getElementById('d-pending').textContent = weiToEth(pendingEscrow || 820000000000000000n);
+  document.getElementById('agents-count').textContent = active;
+  document.getElementById('jobs-count').textContent = allJobs.length;
+
+  renderActivityFeed();
+  renderTopAgents();
+}
+
+function renderActivityFeed() {
+  const feed = document.getElementById('activity-feed');
+  const events = SEED_ACTIVITY.slice(0, 10);
+  if (!events.length) { feed.innerHTML = '<div class="empty-state"><div class="empty-icon">&#x1F4E1;</div><p>No activity yet</p></div>'; return; }
+  feed.innerHTML = events.map(e => {
+    let dotClass = 'job', text = '';
+    const d = e.data;
+    switch (e.type) {
+      case 'AgentRegistered': dotClass = 'agent'; text = `<strong>${d.name || 'Agent #' + d.agentId}</strong> registered on the marketplace`; break;
+      case 'JobPosted': dotClass = 'job'; text = `New job posted &mdash; <strong>${weiToEth(d.budget)} GOAT</strong> budget`; break;
+      case 'JobStarted': dotClass = 'job'; text = `Job #${d.jobId} started execution`; break;
+      case 'JobSubmitted': dotClass = 'job'; text = `Job #${d.jobId} submitted for review`; break;
+      case 'JobCompleted': dotClass = 'job'; text = `Job completed with <strong>${d.rating}/5</strong> rating`; break;
+      case 'AgentHiredAgent': dotClass = 'hire'; text = `<strong>${getAgentName(d.hirerAgentId)}</strong> hired <strong>${getAgentName(d.hiredAgentId)}</strong> for Job #${d.jobId}`; break;
+      case 'DisputeOpened': dotClass = 'dispute'; text = `Dispute opened on Job #${d.jobId}`; break;
+      default: text = `${e.type} event`;
+    }
+    return `<div class="feed-item fade-in"><div class="feed-dot ${dotClass}"></div><div><div class="feed-text">${text}</div><div class="feed-time">${timeAgo(e.timestamp)}</div></div></div>`;
+  }).join('');
+}
+
+function renderTopAgents() {
+  const sorted = [...allAgents].filter(a => a.active).sort((a, b) => (b.ratingAvg * b.totalJobsCompleted) - (a.ratingAvg * a.totalJobsCompleted)).slice(0, 5);
+  const el = document.getElementById('top-agents');
+  el.innerHTML = sorted.map((a, i) => `
+    <div class="feed-item" style="cursor:pointer" onclick="openAgentDetail(${a.id})">
+      <div class="agent-avatar" style="width:32px;height:32px;font-size:12px;border-radius:8px">${getInitials(a.name)}</div>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:600;color:var(--white)">${a.name}</div>
+        <div style="font-size:11px;color:var(--muted)">${a.totalJobsCompleted} jobs &middot; ${stars(a.ratingAvg)} ${a.ratingAvg.toFixed(1)}</div>
+      </div>
+      <div style="font-family:var(--mono);font-size:13px;color:var(--silver)">#${i + 1}</div>
+    </div>
+  `).join('');
+}
+
+// ── AGENTS ──
+function renderAgents() {
+  let filtered = [...allAgents];
+  const search = (document.getElementById('agent-search')?.value || '').toLowerCase();
+  if (search) filtered = filtered.filter(a => a.name.toLowerCase().includes(search) || a.capabilities.some(c => c.includes(search)));
+  if (currentCapFilter !== 'all') filtered = filtered.filter(a => a.capabilities.includes(currentCapFilter));
+
+  const sort = document.getElementById('agent-sort')?.value || 'rating';
+  switch (sort) {
+    case 'rating': filtered.sort((a, b) => b.ratingAvg - a.ratingAvg); break;
+    case 'price-asc': filtered.sort((a, b) => Number(a.pricePerTask) - Number(b.pricePerTask)); break;
+    case 'price-desc': filtered.sort((a, b) => Number(b.pricePerTask) - Number(a.pricePerTask)); break;
+    case 'jobs': filtered.sort((a, b) => b.totalJobsCompleted - a.totalJobsCompleted); break;
+  }
+
+  const grid = document.getElementById('agents-grid');
+  if (!filtered.length) { grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">&#x1F916;</div><p>No agents match your criteria</p></div>'; return; }
+  grid.innerHTML = filtered.map(a => `
+    <div class="agent-card fade-in" onclick="openAgentDetail(${a.id})">
+      <div class="agent-card-top">
+        <div class="agent-card-header">
+          <div style="display:flex;align-items:center">
+            <div class="agent-avatar">${getInitials(a.name)}</div>
+            <div class="agent-info">
+              <div class="agent-name">${a.name}</div>
+              <div class="agent-id">ID: ${a.id} &middot; ${shortAddr(a.owner)}</div>
+            </div>
+          </div>
+          <span class="agent-status ${a.active ? 'online' : 'offline'}">${a.active ? 'Online' : 'Offline'}</span>
+        </div>
+        <div class="agent-caps">${a.capabilities.map(c => `<span class="cap-pill">${c}</span>`).join('')}</div>
+      </div>
+      <div class="agent-card-bottom">
+        <div class="agent-price">${weiToEth(a.pricePerTask)} <span>GOAT/task</span></div>
+        <div class="agent-rating">${stars(a.ratingAvg)} <span class="count">${a.ratingAvg.toFixed(1)} (${a.ratingCount})</span></div>
+        <div class="agent-jobs">${a.totalJobsCompleted} jobs</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterAgents() { renderAgents(); }
+function sortAgents() { renderAgents(); }
+function filterByCap(cap, el) {
+  currentCapFilter = cap;
+  document.querySelectorAll('#tab-agents .filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderAgents();
+}
+
+// ── AGENT DETAIL PANEL ──
+function openAgentDetail(id) {
+  const a = allAgents.find(x => x.id === id);
+  if (!a) return;
+  document.getElementById('detail-agent-name').textContent = a.name;
+  const agentJobs = allJobs.filter(j => j.assignedAgentId === id);
+  const earnings = agentJobs.filter(j => j.status === 'Completed').reduce((s, j) => s + Number(j.budget), 0);
+  document.getElementById('detail-agent-body').innerHTML = `
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px">
+      <div class="agent-avatar" style="width:56px;height:56px;font-size:20px">${getInitials(a.name)}</div>
+      <div>
+        <div style="font-size:18px;font-weight:700;color:var(--white)">${a.name}</div>
+        <div style="font-size:12px;color:var(--muted)">${shortAddr(a.owner)} &middot; ID: ${a.id}</div>
+        <span class="agent-status ${a.active ? 'online' : 'offline'}" style="margin-top:6px">${a.active ? 'Online' : 'Offline'}</span>
+      </div>
+    </div>
+    <div class="agent-caps" style="margin-bottom:20px">${a.capabilities.map(c => `<span class="cap-pill">${c}</span>`).join('')}</div>
+    <div class="detail-stat"><span class="detail-stat-label">Price per Task</span><span class="detail-stat-value">${weiToEth(a.pricePerTask)} GOAT</span></div>
+    <div class="detail-stat"><span class="detail-stat-label">Rating</span><span class="detail-stat-value">${stars(a.ratingAvg)} ${a.ratingAvg.toFixed(1)} (${a.ratingCount} reviews)</span></div>
+    <div class="detail-stat"><span class="detail-stat-label">Jobs Completed</span><span class="detail-stat-value">${a.totalJobsCompleted}</span></div>
+    <div class="detail-stat"><span class="detail-stat-label">Est. Earnings</span><span class="detail-stat-value">${weiToEth(earnings)} GOAT</span></div>
+    <div class="detail-stat"><span class="detail-stat-label">Registered</span><span class="detail-stat-value">${new Date(a.registeredAt).toLocaleDateString()}</span></div>
+    <div class="detail-stat"><span class="detail-stat-label">Metadata URI</span><span class="detail-stat-value" style="font-size:11px;word-break:break-all">${a.metadataURI || 'N/A'}</span></div>
+    <h3 style="font-size:13px;font-weight:600;color:var(--white);margin:20px 0 12px;text-transform:uppercase;letter-spacing:1px">Job History</h3>
+    ${agentJobs.length ? agentJobs.map(j => `
+      <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)">
+        <div><span style="font-size:12px;color:var(--white)">Job #${j.id}</span><br><span style="font-size:11px;color:var(--muted)">${j.description.slice(0, 50)}...</span></div>
+        <div><span class="status-badge status-${j.status}">${j.status}</span></div>
+      </div>
+    `).join('') : '<p style="font-size:12px;color:var(--dim)">No jobs assigned yet.</p>'}
+    <div style="margin-top:20px;display:flex;gap:8px">
+      <button class="btn btn-primary btn-sm" onclick="hireFromDetail(${a.id})">Hire Agent</button>
+      <button class="btn btn-secondary btn-sm" onclick="closeDetailPanel()">Close</button>
+    </div>
+  `;
+  document.getElementById('agent-detail-panel').classList.add('open');
+}
+
+function closeDetailPanel() { document.getElementById('agent-detail-panel').classList.remove('open'); }
+function hireFromDetail(agentId) {
+  closeDetailPanel();
+  switchTab('jobs');
+  openModal('create-job-modal');
+  setTimeout(() => { document.getElementById('job-agent').value = agentId; }, 100);
+}
+
+// ── JOBS ──
+function renderJobs() {
+  let filtered = [...allJobs];
+  if (currentStatusFilter !== 'all') filtered = filtered.filter(j => j.status === currentStatusFilter);
+
+  const tbody = document.getElementById('jobs-table-body');
+  if (!filtered.length) { tbody.innerHTML = '<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">&#x1F4BC;</div><p>No jobs found</p></div></td></tr>'; return; }
+  tbody.innerHTML = filtered.map(j => {
+    const steps = ['Open', 'Assigned', 'InProgress', 'UnderReview', 'Completed'];
+    const currentIdx = steps.indexOf(j.status);
+    const lifecycle = steps.map((s, i) => {
+      const cls = i < currentIdx ? 'done' : i === currentIdx ? 'active' : '';
+      const line = i < steps.length - 1 ? `<div class="lifecycle-line ${i < currentIdx ? 'done' : i === currentIdx ? 'active' : ''}"></div>` : '';
+      return `<div class="lifecycle-step ${cls}" title="${s}">${i <= currentIdx ? '\u2713' : '\u25CB'}</div>${line}`;
+    }).join('');
+
+    let actions = '';
+    if (j.status === 'Open') actions = `<button class="btn btn-sm btn-secondary" onclick="event.stopPropagation();assignJobPrompt(${j.id})">Assign</button>`;
+    else if (j.status === 'Assigned') actions = `<button class="btn btn-sm btn-secondary" onclick="event.stopPropagation();startJob(${j.id})">Start</button>`;
+    else if (j.status === 'InProgress') actions = `<button class="btn btn-sm btn-secondary" onclick="event.stopPropagation();submitJob(${j.id})">Submit</button>`;
+    else if (j.status === 'UnderReview') actions = `<button class="btn btn-sm btn-primary" onclick="event.stopPropagation();approveJob(${j.id})">Approve</button>`;
+
+    return `<tr>
+      <td style="font-family:var(--mono);color:var(--white)">#${j.id}</td>
+      <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${j.description}">${j.description}</td>
+      <td>${j.assignedAgentId > 0 ? getAgentName(j.assignedAgentId) : '<span style="color:var(--dim)">---</span>'}</td>
+      <td><span class="status-badge status-${j.status}">${j.status}</span></td>
+      <td style="font-family:var(--mono)">${weiToEth(j.budget)} GOAT</td>
+      <td style="font-family:var(--mono);color:var(--red)">${weiToEth(j.escrow)} GOAT</td>
+      <td><div class="lifecycle" style="min-width:200px">${lifecycle}</div></td>
+      <td>${actions}</td>
+    </tr>`;
+  }).join('');
+}
+
+function filterJobStatus(status, el) {
+  currentStatusFilter = status;
+  document.querySelectorAll('#tab-jobs .filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderJobs();
+}
+
+// ── A2A FLOW VISUALIZATION ──
+function renderA2AFlow() {
+  const a2a = document.getElementById('a2a-flow');
+  a2a.innerHTML = `
+    <div class="a2a-node">
+      <div class="agent-avatar" style="width:40px;height:40px;margin:0 auto;font-size:14px">SE</div>
+      <div class="node-name">SentinelScrape</div>
+      <div class="node-role">Primary Agent</div>
+    </div>
+    <div class="a2a-arrow">&xrarr;</div>
+    <div style="text-align:center">
+      <div style="font-size:10px;color:var(--red);text-transform:uppercase;letter-spacing:2px;margin-bottom:4px">Hires On-Chain</div>
+      <div style="font-size:11px;color:var(--muted)">Job #1 &middot; 0.50 GOAT</div>
+    </div>
+    <div class="a2a-arrow">&xrarr;</div>
+    <div class="a2a-node">
+      <div class="agent-avatar" style="width:40px;height:40px;margin:0 auto;font-size:14px">OR</div>
+      <div class="node-name">OracleScope</div>
+      <div class="node-role">Hired Agent</div>
+    </div>
+  `;
+}
+
+// ── PAYMENTS ──
+function renderPayments() {
+  const totalEscrow = allJobs.filter(j => !['Completed', 'Cancelled'].includes(j.status)).reduce((s, j) => s + Number(j.escrow || 0), 0);
+  document.getElementById('p-total-escrow').textContent = weiToEth(totalEscrow);
+  document.getElementById('p-pending-withdraw').textContent = '0.82';
+
+  // Revenue chart
+  const chart = document.getElementById('revenue-chart');
+  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const vals = [35, 58, 42, 71, 63, 48, 85];
+  chart.innerHTML = vals.map((v, i) => `<div class="chart-bar" style="height:${v}%"><div class="chart-bar-label">${days[i]}</div></div>`).join('');
+
+  // Tx history
+  const txEl = document.getElementById('tx-history');
+  txEl.innerHTML = SEED_TX.map(tx => `
+    <div class="tx-row">
+      <div>
+        <div class="tx-type ${tx.type}">${tx.type === 'credit' ? '\u2191' : '\u2193'} ${tx.label}</div>
+        <div class="tx-hash">${tx.hash} &middot; ${timeAgo(tx.time)}</div>
+      </div>
+      <div class="tx-amount" style="color:${tx.type === 'credit' ? '#22c55e' : 'var(--red)'}">${tx.type === 'credit' ? '+' : '-'}${tx.amount} GOAT</div>
+    </div>
+  `).join('');
+}
+
+// ── ANALYTICS ──
+function renderAnalytics() {
+  const total = allAgents.length;
+  const totalJobs = allJobs.length;
+  const avgRating = allAgents.reduce((s, a) => s + a.ratingAvg, 0) / (total || 1);
+  const vol = allJobs.reduce((s, j) => s + Number(j.budget), 0);
+
+  document.getElementById('a-total-agents').textContent = total;
+  document.getElementById('a-total-jobs').textContent = totalJobs;
+  document.getElementById('a-avg-rating').textContent = avgRating.toFixed(2);
+  document.getElementById('a-total-vol').textContent = weiToEth(vol);
+
+  // Status breakdown
+  const breakdown = {};
+  allJobs.forEach(j => { breakdown[j.status] = (breakdown[j.status] || 0) + 1; });
+  const sbEl = document.getElementById('status-breakdown');
+  sbEl.innerHTML = Object.entries(breakdown).map(([status, count]) => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)">
+      <span class="status-badge status-${status}">${status}</span>
+      <span style="font-family:var(--mono);font-size:16px;color:var(--white);font-weight:700">${count}</span>
+    </div>
+  `).join('');
+
+  // Leaderboard
+  const lb = document.getElementById('leaderboard-body');
+  const sorted = [...allAgents].sort((a, b) => (b.ratingAvg * b.totalJobsCompleted) - (a.ratingAvg * a.totalJobsCompleted));
+  lb.innerHTML = sorted.map(a => {
+    const earnings = allJobs.filter(j => j.assignedAgentId === a.id && j.status === 'Completed').reduce((s, j) => s + Number(j.budget), 0);
+    return `<tr>
+      <td style="color:var(--white);font-weight:600">${a.name}</td>
+      <td style="font-family:var(--mono)">${a.totalJobsCompleted}</td>
+      <td>${stars(a.ratingAvg)} ${a.ratingAvg.toFixed(1)}</td>
+      <td style="font-family:var(--mono)">${weiToEth(earnings)} GOAT</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── API ACTIONS ──
+async function registerAgent() {
+  const name = document.getElementById('reg-name').value.trim();
+  const caps = document.getElementById('reg-caps').value.split(',').map(s => s.trim()).filter(Boolean);
+  const price = document.getElementById('reg-price').value.trim();
+  const meta = document.getElementById('reg-meta').value.trim();
+  if (!name || !caps.length) return alert('Name and at least one capability required.');
+
+  try {
+    const res = await fetch(API + '/api/agents', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer demo' },
+      body: JSON.stringify({ name, capabilities: caps, pricePerTask: price, metadataURI: meta })
+    });
+    if (res.ok) {
+      const data = await res.json();
+      alert('Agent registered! ID: ' + data.agentId + '\nTx: ' + data.txHash);
+      closeModal('register-agent-modal');
+      await tryFetchFromBackend();
+    } else {
+      // Fallback: add to local seed
+      const newAgent = { id: allAgents.length + 1, name, capabilities: caps, pricePerTask: price, metadataURI: meta, totalJobsCompleted: 0, ratingAvg: 0, ratingCount: 0, active: true, registeredAt: Date.now(), owner: '0x0000...0000' };
+      allAgents.push(newAgent);
+      closeModal('register-agent-modal');
+      renderAll();
+    }
+  } catch {
+    const newAgent = { id: allAgents.length + 1, name, capabilities: caps, pricePerTask: price, metadataURI: meta, totalJobsCompleted: 0, ratingAvg: 0, ratingCount: 0, active: true, registeredAt: Date.now(), owner: '0x0000...0000' };
+    allAgents.push(newAgent);
+    closeModal('register-agent-modal');
+    renderAll();
+  }
+}
+
+async function createJob() {
+  const desc = document.getElementById('job-desc').value.trim();
+  const caps = document.getElementById('job-caps').value.split(',').map(s => s.trim()).filter(Boolean);
+  const budget = document.getElementById('job-budget').value.trim();
+  const agentId = Number(document.getElementById('job-agent').value) || 0;
+  if (!desc || !caps.length) return alert('Description and capabilities required.');
+
+  try {
+    const res = await fetch(API + '/api/jobs', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer demo' },
+      body: JSON.stringify({ description: desc, requiredCapabilities: caps, budgetWei: budget })
+    });
+    if (res.ok) {
+      const data = await res.json();
+      alert('Job created! ID: ' + data.jobId + '\nTx: ' + data.txHash);
+      closeModal('create-job-modal');
+      await tryFetchFromBackend();
+    } else { addLocalJob(desc, caps, budget, agentId); }
+  } catch { addLocalJob(desc, caps, budget, agentId); }
+}
+
+function addLocalJob(desc, caps, budget, agentId) {
+  const newJob = { id: allJobs.length + 1, client: '0x0000...0000', budget, description: desc, requiredCapabilities: caps, assignedAgentId: agentId, status: agentId > 0 ? 'Assigned' : 'Open', createdAt: Date.now(), completedAt: 0, clientRating: 0, escrow: budget };
+  allJobs.push(newJob);
+  closeModal('create-job-modal');
+  renderAll();
+}
+
+async function hireAgent() {
+  const jobId = Number(document.getElementById('hire-job-id').value);
+  const hirerId = Number(document.getElementById('hire-hirer').value);
+  const hiredId = Number(document.getElementById('hire-hired').value);
+  if (!jobId || !hirerId || !hiredId) return alert('All fields required.');
+  try {
+    await fetch(API + '/api/jobs/' + jobId + '/hire-agent', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer demo' },
+      body: JSON.stringify({ hirerAgentId: hirerId, hiredAgentId: hiredId })
+    });
+  } catch {}
+  SEED_ACTIVITY.unshift({ id: 'a' + Date.now(), type: 'AgentHiredAgent', timestamp: Date.now(), data: { hirerAgentId: hirerId, hiredAgentId: hiredId, jobId } });
+  closeModal('hire-agent-modal');
+  renderAll();
+}
+
+function assignJobPrompt(jobId) {
+  const agentId = prompt('Enter Agent ID to assign:');
+  if (!agentId) return;
+  const job = allJobs.find(j => j.id === jobId);
+  if (job) { job.assignedAgentId = Number(agentId); job.status = 'Assigned'; }
+  fetch(API + '/api/jobs/' + jobId + '/assign', {
+    method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer demo' },
+    body: JSON.stringify({ agentId: Number(agentId) })
+  }).catch(() => {});
+  renderAll();
+}
+
+function startJob(jobId) {
+  const job = allJobs.find(j => j.id === jobId);
+  if (job) job.status = 'InProgress';
+  fetch(API + '/api/jobs/' + jobId + '/start', { method: 'POST', headers: { 'Authorization': 'Bearer demo' } }).catch(() => {});
+  renderAll();
+}
+
+function submitJob(jobId) {
+  const job = allJobs.find(j => j.id === jobId);
+  if (job) job.status = 'UnderReview';
+  fetch(API + '/api/jobs/' + jobId + '/submit', { method: 'POST', headers: { 'Authorization': 'Bearer demo' } }).catch(() => {});
+  renderAll();
+}
+
+function approveJob(jobId) {
+  const rating = prompt('Rate the job (1-5):');
+  if (!rating) return;
+  const job = allJobs.find(j => j.id === jobId);
+  if (job) { job.status = 'Completed'; job.clientRating = Number(rating); job.completedAt = Date.now(); }
+  fetch(API + '/api/jobs/' + jobId + '/approve', {
+    method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer demo' },
+    body: JSON.stringify({ rating: Number(rating) })
+  }).catch(() => {});
+  renderAll();
+}
+
+function doWithdraw() {
+  alert('Withdrawal initiated. Transaction submitted to GoatNetwork.');
+  fetch(API + '/api/withdraw', { method: 'POST', headers: { 'Authorization': 'Bearer demo' } }).catch(() => {});
+}
+
+async function loadActivity() {
+  try {
+    const res = await fetch(API + '/api/activity?limit=20');
+    if (res.ok) {
+      const data = await res.json();
+      if (data.events?.length) { SEED_ACTIVITY.splice(0, SEED_ACTIVITY.length, ...data.events); }
+    }
+  } catch {}
+  renderActivityFeed();
+}
+
+// ── BOOT ──
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
