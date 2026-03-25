@@ -251,6 +251,14 @@
   <div class="sidebar-footer">
     <div class="ws-status"><span class="ws-dot" id="ws-dot"></span><span id="ws-label">Connecting...</span></div>
     <div style="color:var(--dim)">GoatNetwork &middot; Port 4000</div>
+    <div style="margin-top:8px;position:relative;">
+      <button onclick="event.stopPropagation();var d=document.getElementById('gaLangDD');d.style.display=d.style.display==='block'?'none':'block';" style="background:var(--bg3);border:1px solid var(--border);color:var(--silver);padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;width:100%;text-align:left;display:flex;align-items:center;gap:4px;">&#127760; <span id="gaLangLabel">English</span></button>
+      <div id="gaLangDD" style="position:absolute;bottom:calc(100%+4px);left:0;right:0;background:var(--bg2);border:1px solid var(--border);border-radius:6px;display:none;z-index:200;overflow:hidden;">
+        <div onclick="setGaLang('en')" style="padding:8px 12px;cursor:pointer;font-size:11px;color:var(--white);font-weight:600;">&#127468;&#127463; English</div>
+        <div onclick="setGaLang('es')" style="padding:8px 12px;cursor:pointer;font-size:11px;color:var(--silver);">&#127466;&#127480; Espa&#241;ol</div>
+        <div onclick="setGaLang('fr')" style="padding:8px 12px;cursor:pointer;font-size:11px;color:var(--silver);">&#127467;&#127479; Fran&#231;ais</div>
+      </div>
+    </div>
   </div>
 </aside>
 
@@ -468,8 +476,16 @@
 
 <script>
 // ═══════════════════════════════════════════════════
-//  GARRA - Frontend Application
+//  GARRA - Frontend Application + i18n
 // ═══════════════════════════════════════════════════
+
+let gaLang = localStorage.getItem('garra-app-lang') || 'en';
+function setGaLang(lang) {
+  gaLang = lang; localStorage.setItem('garra-app-lang', lang);
+  document.getElementById('gaLangLabel').textContent = {en:'English',es:'Espa\u00f1ol',fr:'Fran\u00e7ais'}[lang]||lang;
+  const dd = document.getElementById('gaLangDD'); if(dd) dd.style.display='none';
+}
+document.addEventListener('click',()=>{const d=document.getElementById('gaLangDD');if(d)d.style.display='none';});
 
 const API = 'http://localhost:4000';
 let ws = null;
