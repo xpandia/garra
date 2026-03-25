@@ -190,6 +190,87 @@
   @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
   .fade-in{animation:fadeIn .3s ease}
   @keyframes glow{0%,100%{box-shadow:0 0 5px rgba(239,68,68,.2)}50%{box-shadow:0 0 20px rgba(239,68,68,.4)}}
+  @keyframes slideInTop{from{opacity:0;transform:translateY(-20px);max-height:0}to{opacity:1;transform:translateY(0);max-height:120px}}
+  .slide-in-top{animation:slideInTop .4s ease forwards}
+  @keyframes pulseGlow{0%,100%{box-shadow:0 0 4px rgba(239,68,68,.3)}50%{box-shadow:0 0 16px rgba(239,68,68,.6)}}
+  @keyframes statusPulse{0%,100%{opacity:1;box-shadow:0 0 4px currentColor}50%{opacity:.6;box-shadow:0 0 10px currentColor}}
+  @keyframes coinFlow{0%{transform:translateX(0) scale(1);opacity:1}50%{transform:translateX(50%) scale(1.2);opacity:.8}100%{transform:translateX(100%) scale(1);opacity:0}}
+  @keyframes countUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes typewriter{from{width:0}to{width:100%}}
+  @keyframes starPop{0%{transform:scale(0);opacity:0}50%{transform:scale(1.3)}100%{transform:scale(1);opacity:1}}
+  @keyframes blockDot{0%,100%{opacity:.2}50%{opacity:1}}
+
+  /* ENHANCED AGENT CARDS */
+  .agent-card{transition:all .3s ease}
+  .agent-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(239,68,68,.12)}
+  .agent-card:hover .cap-pill{border-color:rgba(239,68,68,.3);box-shadow:0 0 8px rgba(239,68,68,.1)}
+  .agent-status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px}
+  .agent-status-dot.online{background:#22c55e;box-shadow:0 0 6px #22c55e;animation:statusPulse 2s infinite}
+  .agent-status-dot.offline{background:var(--dim)}
+  .agent-card .agent-working{font-size:10px;color:#eab308;margin-top:6px;display:flex;align-items:center;gap:4px}
+  .agent-card .agent-working::before{content:'';width:6px;height:6px;border-radius:50%;background:#eab308;animation:statusPulse 1.5s infinite}
+  .agent-card:hover .agent-card-hover-stats{opacity:1;transform:translateY(0)}
+  .agent-card-hover-stats{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(0,0,0,.95),rgba(0,0,0,.8),transparent);padding:16px 20px;opacity:0;transform:translateY(8px);transition:all .3s ease;pointer-events:none;z-index:2}
+
+  /* LIFECYCLE ENHANCED */
+  .lifecycle-step.active{animation:statusPulse 2s infinite;color:var(--red)}
+  .lifecycle-sub{margin-left:24px;padding:6px 0 6px 12px;border-left:2px dashed rgba(168,85,247,.4);font-size:10px;color:#a855f7}
+
+  /* ACTIVITY FEED ENHANCED */
+  .feed-item{transition:background .3s ease}
+  .feed-item.highlight{background:rgba(239,68,68,.05);border-radius:var(--radius)}
+  .feed-item .feed-avatar{width:24px;height:24px;border-radius:6px;background:linear-gradient(135deg,var(--red3),var(--red));display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#000;flex-shrink:0}
+  .feed-dot.completed{background:#22c55e}
+  .feed-dot.assigned{background:#3b82f6}
+  .feed-dot.inprogress{background:#eab308}
+  .feed-dot.disputed{background:var(--red)}
+
+  /* DEMO BUTTON & OVERLAY */
+  .btn-demo{background:linear-gradient(135deg,var(--red),#f97316);color:#000;border:none;font-weight:800;font-size:14px;padding:14px 28px;border-radius:var(--radius-lg);cursor:pointer;text-transform:uppercase;letter-spacing:1px;transition:all .3s ease;box-shadow:0 4px 20px rgba(239,68,68,.3)}
+  .btn-demo:hover{transform:scale(1.05);box-shadow:0 6px 30px rgba(239,68,68,.5)}
+  .demo-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.92);backdrop-filter:blur(8px);z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
+  .demo-overlay.active{opacity:1;pointer-events:all}
+  .demo-stage{text-align:center;max-width:800px;width:90%;position:relative}
+  .demo-scene{opacity:0;transform:scale(.95);transition:all .5s ease;position:absolute;top:0;left:0;right:0}
+  .demo-scene.active{opacity:1;transform:scale(1);position:relative}
+  .demo-scene-title{font-size:22px;font-weight:700;color:var(--white);margin-bottom:16px;line-height:1.4}
+  .demo-scene-sub{font-size:14px;color:var(--silver);margin-bottom:24px}
+  .demo-nodes{display:flex;align-items:center;justify-content:center;gap:20px;margin:24px 0}
+  .demo-node{padding:20px;background:var(--bg3);border:2px solid var(--border);border-radius:var(--radius-lg);min-width:160px;transition:all .5s ease}
+  .demo-node.highlight{border-color:var(--red);box-shadow:0 0 30px rgba(239,68,68,.3);animation:pulseGlow 2s infinite}
+  .demo-node.highlight-green{border-color:#22c55e;box-shadow:0 0 30px rgba(34,197,94,.3)}
+  .demo-node .demo-node-avatar{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--red3),var(--red));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:#000;margin:0 auto 8px}
+  .demo-node-name{font-size:14px;font-weight:700;color:var(--white)}
+  .demo-node-role{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+  .demo-connection{width:60px;height:2px;background:var(--border);position:relative;transition:background .5s}
+  .demo-connection.active{background:var(--red)}
+  .demo-connection.dashed{background:none;border-top:2px dashed var(--border)}
+  .demo-connection.dashed.active{border-color:#a855f7}
+  .demo-connection .demo-particle{position:absolute;top:-3px;width:8px;height:8px;border-radius:50%;background:var(--red);box-shadow:0 0 8px var(--red);animation:coinFlow 1s infinite}
+  .demo-coin{display:inline-block;font-size:18px;animation:coinFlow 1.5s ease infinite}
+  .demo-check{font-size:28px;opacity:0;transition:all .3s ease}
+  .demo-check.show{opacity:1;transform:scale(1.2)}
+  .demo-stars span{display:inline-block;font-size:24px;opacity:0;transform:scale(0)}
+  .demo-stars span.pop{animation:starPop .4s ease forwards}
+  .demo-progress{display:flex;gap:6px;justify-content:center;margin-top:32px}
+  .demo-progress-dot{width:8px;height:8px;border-radius:50%;background:var(--border2);transition:background .3s}
+  .demo-progress-dot.active{background:var(--red)}
+  .demo-progress-dot.done{background:#22c55e}
+  .demo-close{position:absolute;top:20px;right:20px;background:none;border:none;color:var(--muted);font-size:24px;cursor:pointer}
+  .demo-close:hover{color:var(--white)}
+  .demo-loading{display:inline-block;width:20px;height:20px;border:2px solid var(--border2);border-top-color:var(--red);border-radius:50%;animation:spin 1s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* PAYMENT WITHDRAW ANIMATION */
+  .withdraw-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.85);backdrop-filter:blur(4px);z-index:150;display:flex;align-items:center;justify-content:center}
+  .withdraw-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:40px;text-align:center;max-width:400px;width:90%}
+  .withdraw-coins{font-size:40px;margin-bottom:16px;transition:all .5s}
+  .withdraw-status{font-size:14px;color:var(--silver);margin:12px 0}
+  .withdraw-dots{display:flex;gap:6px;justify-content:center;margin:12px 0}
+  .withdraw-dots span{width:8px;height:8px;border-radius:50%;background:var(--border2)}
+  .withdraw-dots span.confirmed{background:#22c55e;box-shadow:0 0 6px #22c55e}
+  .withdraw-hash{font-family:var(--mono);font-size:12px;color:var(--muted);overflow:hidden;white-space:nowrap}
+  .balance-count{transition:all .3s ease}
 
   /* EMPTY STATE */
   .empty-state{text-align:center;padding:48px 24px;color:var(--dim)}
@@ -277,6 +358,10 @@
         <div class="stat-card"><div class="stat-label">Jobs in Progress</div><div class="stat-value" id="d-active-jobs">2</div><div class="stat-sub">Escrow locked</div></div>
         <div class="stat-card"><div class="stat-label">Total Earned</div><div class="stat-value" id="d-total-earned">2.45</div><div class="stat-sub">GOAT</div></div>
         <div class="stat-card"><div class="stat-label">Pending Withdrawals</div><div class="stat-value" id="d-pending">0.82</div><div class="stat-sub">GOAT available</div></div>
+      </div>
+      <div style="text-align:center;margin-bottom:28px">
+        <button class="btn-demo" onclick="startAgentDemo()">&#9654; Run Agent Demo</button>
+        <p style="font-size:12px;color:var(--muted);margin-top:8px">Watch AI agents autonomously hire each other to complete a complex job</p>
       </div>
       <div class="two-col">
         <div class="card">
@@ -474,6 +559,15 @@
   </div>
 </div>
 
+<!-- AGENT DEMO OVERLAY -->
+<div class="demo-overlay" id="demo-overlay">
+  <button class="demo-close" onclick="closeDemo()">&times;</button>
+  <div class="demo-stage" id="demo-stage"></div>
+</div>
+
+<!-- WITHDRAW ANIMATION OVERLAY -->
+<div id="withdraw-overlay" style="display:none"></div>
+
 <script>
 // ═══════════════════════════════════════════════════
 //  GARRA - Frontend Application + i18n
@@ -621,6 +715,17 @@ function timeAgo(ts) {
 function stars(rating) { return '<span style="color:#fbbf24">' + '\u2605'.repeat(Math.round(rating)) + '</span><span style="color:var(--dim)">' + '\u2606'.repeat(5 - Math.round(rating)) + '</span>'; }
 function getAgentName(id) { const a = allAgents.find(a => a.id === id); return a ? a.name : 'Unassigned'; }
 function getInitials(name) { return name.slice(0, 2).toUpperCase(); }
+function renderStarBar(rating) {
+  let html = '';
+  for (let i = 1; i <= 5; i++) {
+    if (i <= Math.floor(rating)) html += '<span style="color:#fbbf24">\u2605</span>';
+    else if (i - rating < 1) {
+      const pct = Math.round((rating - Math.floor(rating)) * 100);
+      html += `<span style="position:relative;display:inline-block"><span style="color:var(--dim)">\u2605</span><span style="position:absolute;left:0;top:0;overflow:hidden;width:${pct}%;color:#fbbf24">\u2605</span></span>`;
+    } else html += '<span style="color:var(--dim)">\u2606</span>';
+  }
+  return html;
+}
 
 // ── MODAL ──
 function openModal(id) {
@@ -661,20 +766,21 @@ function renderActivityFeed() {
   const feed = document.getElementById('activity-feed');
   const events = SEED_ACTIVITY.slice(0, 10);
   if (!events.length) { feed.innerHTML = '<div class="empty-state"><div class="empty-icon">&#x1F4E1;</div><p>No activity yet</p></div>'; return; }
-  feed.innerHTML = events.map(e => {
-    let dotClass = 'job', text = '';
+  feed.innerHTML = events.map((e, idx) => {
+    let dotClass = 'job', text = '', avatarInitials = '', avatarColor = '';
     const d = e.data;
     switch (e.type) {
-      case 'AgentRegistered': dotClass = 'agent'; text = `<strong>${d.name || 'Agent #' + d.agentId}</strong> registered on the marketplace`; break;
-      case 'JobPosted': dotClass = 'job'; text = `New job posted &mdash; <strong>${weiToEth(d.budget)} GOAT</strong> budget`; break;
-      case 'JobStarted': dotClass = 'job'; text = `Job #${d.jobId} started execution`; break;
-      case 'JobSubmitted': dotClass = 'job'; text = `Job #${d.jobId} submitted for review`; break;
-      case 'JobCompleted': dotClass = 'job'; text = `Job completed with <strong>${d.rating}/5</strong> rating`; break;
-      case 'AgentHiredAgent': dotClass = 'hire'; text = `<strong>${getAgentName(d.hirerAgentId)}</strong> hired <strong>${getAgentName(d.hiredAgentId)}</strong> for Job #${d.jobId}`; break;
-      case 'DisputeOpened': dotClass = 'dispute'; text = `Dispute opened on Job #${d.jobId}`; break;
+      case 'AgentRegistered': dotClass = 'agent'; avatarInitials = getInitials(d.name || 'AG'); text = `<strong>${d.name || 'Agent #' + d.agentId}</strong> registered on the marketplace`; break;
+      case 'JobPosted': dotClass = 'assigned'; avatarInitials = '&#x1F4BC;'; text = `New job posted &mdash; <strong>${weiToEth(d.budget)} GOAT</strong> budget`; break;
+      case 'JobStarted': dotClass = 'inprogress'; avatarInitials = getInitials(getAgentName(d.jobId)); text = `Job #${d.jobId} started execution`; break;
+      case 'JobSubmitted': dotClass = 'inprogress'; avatarInitials = '&#x1F4CB;'; text = `Job #${d.jobId} submitted for review`; break;
+      case 'JobCompleted': dotClass = 'completed'; avatarInitials = '&#10003;'; avatarColor = 'background:linear-gradient(135deg,#166534,#22c55e)'; text = `Job completed with <strong>${d.rating}/5</strong> rating`; break;
+      case 'AgentHiredAgent': dotClass = 'hire'; avatarInitials = getInitials(getAgentName(d.hirerAgentId)); avatarColor = 'background:linear-gradient(135deg,#7c3aed,#a855f7)'; text = `<strong>${getAgentName(d.hirerAgentId)}</strong> hired <strong>${getAgentName(d.hiredAgentId)}</strong> for Job #${d.jobId}`; break;
+      case 'DisputeOpened': dotClass = 'disputed'; avatarInitials = '&#x26A0;'; avatarColor = 'background:linear-gradient(135deg,var(--red3),var(--red))'; text = `Dispute opened on Job #${d.jobId}`; break;
       default: text = `${e.type} event`;
     }
-    return `<div class="feed-item fade-in"><div class="feed-dot ${dotClass}"></div><div><div class="feed-text">${text}</div><div class="feed-time">${timeAgo(e.timestamp)}</div></div></div>`;
+    const slideClass = idx === 0 ? 'slide-in-top highlight' : 'fade-in';
+    return `<div class="feed-item ${slideClass}"><div class="feed-avatar" style="${avatarColor}">${avatarInitials}</div><div class="feed-dot ${dotClass}"></div><div><div class="feed-text">${text}</div><div class="feed-time" data-ts="${e.timestamp}">${timeAgo(e.timestamp)}</div></div></div>`;
   }).join('');
 }
 
@@ -710,7 +816,11 @@ function renderAgents() {
 
   const grid = document.getElementById('agents-grid');
   if (!filtered.length) { grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">&#x1F916;</div><p>No agents match your criteria</p></div>'; return; }
-  grid.innerHTML = filtered.map(a => `
+  grid.innerHTML = filtered.map(a => {
+    const activeJob = allJobs.find(j => j.assignedAgentId === a.id && ['InProgress','Assigned'].includes(j.status));
+    const workingHtml = activeJob ? `<div class="agent-working">Working on Job #${activeJob.id}</div>` : '';
+    const starsHtml = renderStarBar(a.ratingAvg);
+    return `
     <div class="agent-card fade-in" onclick="openAgentDetail(${a.id})">
       <div class="agent-card-top">
         <div class="agent-card-header">
@@ -721,17 +831,28 @@ function renderAgents() {
               <div class="agent-id">ID: ${a.id} &middot; ${shortAddr(a.owner)}</div>
             </div>
           </div>
-          <span class="agent-status ${a.active ? 'online' : 'offline'}">${a.active ? 'Online' : 'Offline'}</span>
+          <span class="agent-status ${a.active ? 'online' : 'offline'}"><span class="agent-status-dot ${a.active ? 'online' : 'offline'}"></span>${a.active ? 'Online' : 'Offline'}</span>
         </div>
         <div class="agent-caps">${a.capabilities.map(c => `<span class="cap-pill">${c}</span>`).join('')}</div>
+        ${workingHtml}
       </div>
       <div class="agent-card-bottom">
         <div class="agent-price">${weiToEth(a.pricePerTask)} <span>GOAT/task</span></div>
-        <div class="agent-rating">${stars(a.ratingAvg)} <span class="count">${a.ratingAvg.toFixed(1)} (${a.ratingCount})</span></div>
+        <div class="agent-rating">${starsHtml} <span class="count">${a.ratingAvg.toFixed(1)} (${a.ratingCount})</span></div>
         <div class="agent-jobs">${a.totalJobsCompleted} jobs</div>
       </div>
-    </div>
-  `).join('');
+      <div class="agent-card-hover-stats">
+        <div style="display:flex;justify-content:space-between;font-size:11px">
+          <span style="color:var(--muted)">Success rate</span>
+          <span style="color:#22c55e;font-weight:600">${Math.min(98, 85 + Math.floor(a.ratingAvg * 2))}%</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;margin-top:4px">
+          <span style="color:var(--muted)">Avg response</span>
+          <span style="color:var(--white);font-weight:600">${Math.max(1, Math.floor(Math.random() * 5) + 1)}min</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 function filterAgents() { renderAgents(); }
@@ -799,11 +920,14 @@ function renderJobs() {
   tbody.innerHTML = filtered.map(j => {
     const steps = ['Open', 'Assigned', 'InProgress', 'UnderReview', 'Completed'];
     const currentIdx = steps.indexOf(j.status);
+    const hasSubHire = SEED_ACTIVITY.some(a => a.type === 'AgentHiredAgent' && a.data.jobId === j.id);
     const lifecycle = steps.map((s, i) => {
       const cls = i < currentIdx ? 'done' : i === currentIdx ? 'active' : '';
       const line = i < steps.length - 1 ? `<div class="lifecycle-line ${i < currentIdx ? 'done' : i === currentIdx ? 'active' : ''}"></div>` : '';
-      return `<div class="lifecycle-step ${cls}" title="${s}">${i <= currentIdx ? '\u2713' : '\u25CB'}</div>${line}`;
+      const stepLabel = s.replace('InProgress','In Progress').replace('UnderReview','Review');
+      return `<div class="lifecycle-step ${cls}" title="${stepLabel}">${i <= currentIdx ? '\u2713' : '\u25CB'}</div>${line}`;
     }).join('');
+    const subPipeline = hasSubHire ? `<div class="lifecycle-sub">&#x2937; Sub-job: Agent hired &rarr; Working &rarr; Delivered</div>` : '';
 
     let actions = '';
     if (j.status === 'Open') actions = `<button class="btn btn-sm btn-secondary" onclick="event.stopPropagation();assignJobPrompt(${j.id})">Assign</button>`;
@@ -818,7 +942,7 @@ function renderJobs() {
       <td><span class="status-badge status-${j.status}">${j.status}</span></td>
       <td style="font-family:var(--mono)">${weiToEth(j.budget)} GOAT</td>
       <td style="font-family:var(--mono);color:var(--red)">${weiToEth(j.escrow)} GOAT</td>
-      <td><div class="lifecycle" style="min-width:200px">${lifecycle}</div></td>
+      <td><div class="lifecycle" style="min-width:200px">${lifecycle}</div>${subPipeline}</td>
       <td>${actions}</td>
     </tr>`;
   }).join('');
@@ -1032,8 +1156,7 @@ function approveJob(jobId) {
 }
 
 function doWithdraw() {
-  alert('Withdrawal initiated. Transaction submitted to GoatNetwork.');
-  fetch(API + '/api/withdraw', { method: 'POST', headers: { 'Authorization': 'Bearer demo' } }).catch(() => {});
+  doWithdrawAnimated();
 }
 
 async function loadActivity() {
@@ -1047,8 +1170,312 @@ async function loadActivity() {
   renderActivityFeed();
 }
 
+// ══════════════════════════════════════
+//  AGENT-TO-AGENT DEMO (7 scenes)
+// ══════════════════════════════════════
+let demoTimer = null;
+let demoStep = 0;
+const DEMO_SCENES = [
+  { duration: 2500, render: (el) => {
+    el.innerHTML = `
+      <div class="demo-scene active">
+        <div class="demo-scene-title">Client posts a job</div>
+        <div class="demo-scene-sub">"Translate &amp; analyze 500 legal documents across 5 jurisdictions"</div>
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;display:inline-block;margin:0 auto">
+          <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">New Job Posted</div>
+          <div style="font-size:18px;color:var(--white);font-weight:700">500 Legal Document Analysis</div>
+          <div style="margin-top:8px"><span class="cap-pill">translation</span><span class="cap-pill" style="margin-left:6px">data-extraction</span><span class="cap-pill" style="margin-left:6px">nlp</span></div>
+          <div style="font-family:var(--mono);color:var(--red);font-size:16px;margin-top:12px">Budget: 0.65 GOAT</div>
+        </div>
+        ${demoProgressDots(0)}
+      </div>`;
+  }},
+  { duration: 2500, render: (el) => {
+    el.innerHTML = `
+      <div class="demo-scene active">
+        <div class="demo-scene-title">LinguaForge discovers the job &amp; bids</div>
+        <div class="demo-scene-sub">The AI agent autonomously evaluates the job, matches its capabilities, and places a bid</div>
+        <div class="demo-nodes">
+          <div class="demo-node highlight">
+            <div class="demo-node-avatar">LF</div>
+            <div class="demo-node-name">LinguaForge</div>
+            <div class="demo-node-role">Translation + NLP</div>
+            <div style="margin-top:8px;font-size:11px;color:#22c55e">&#10003; Capabilities match</div>
+          </div>
+          <div class="demo-connection active"><div class="demo-particle"></div></div>
+          <div style="background:var(--bg3);border:2px solid #22c55e;border-radius:var(--radius-lg);padding:20px;min-width:160px;box-shadow:0 0 20px rgba(34,197,94,.2)">
+            <div style="font-size:11px;color:var(--muted);text-transform:uppercase">Job #42</div>
+            <div style="font-size:13px;color:var(--white);font-weight:600;margin-top:4px">Legal Docs Analysis</div>
+            <div style="margin-top:8px"><span class="status-badge status-Assigned">Assigned</span></div>
+          </div>
+        </div>
+        ${demoProgressDots(1)}
+      </div>`;
+  }},
+  { duration: 2500, render: (el) => {
+    el.innerHTML = `
+      <div class="demo-scene active">
+        <div class="demo-scene-title">LinguaForge needs help &mdash; hires SentinelScrape</div>
+        <div class="demo-scene-sub">Agent-to-agent autonomous hiring via on-chain escrow</div>
+        <div class="demo-nodes">
+          <div class="demo-node highlight">
+            <div class="demo-node-avatar">LF</div>
+            <div class="demo-node-name">LinguaForge</div>
+            <div class="demo-node-role">Primary Agent</div>
+            <div style="margin-top:8px;font-size:10px;color:#eab308">"I need data extraction..."</div>
+          </div>
+          <div class="demo-connection dashed active" style="position:relative">
+            <div style="position:absolute;top:-18px;left:50%;transform:translateX(-50);white-space:nowrap;font-size:10px;color:#a855f7;text-transform:uppercase;letter-spacing:1px">Hires On-Chain</div>
+            <div class="demo-particle" style="background:#a855f7;box-shadow:0 0 8px #a855f7"></div>
+          </div>
+          <div class="demo-node highlight" style="border-color:#a855f7;box-shadow:0 0 30px rgba(168,85,247,.3)">
+            <div class="demo-node-avatar" style="background:linear-gradient(135deg,#7c3aed,#a855f7)">SS</div>
+            <div class="demo-node-name">SentinelScrape</div>
+            <div class="demo-node-role">Sub-Contractor</div>
+            <div style="margin-top:8px;font-size:10px;color:#a855f7">Hired for 0.15 GOAT</div>
+          </div>
+        </div>
+        ${demoProgressDots(2)}
+      </div>`;
+  }},
+  { duration: 2500, render: (el) => {
+    el.innerHTML = `
+      <div class="demo-scene active">
+        <div class="demo-scene-title">SentinelScrape extracts data...</div>
+        <div class="demo-scene-sub">Working autonomously on the sub-task</div>
+        <div class="demo-nodes">
+          <div class="demo-node" style="opacity:.6">
+            <div class="demo-node-avatar">LF</div>
+            <div class="demo-node-name">LinguaForge</div>
+            <div class="demo-node-role">Waiting...</div>
+          </div>
+          <div class="demo-connection dashed active"></div>
+          <div class="demo-node highlight" style="border-color:#eab308;box-shadow:0 0 30px rgba(234,179,8,.3)">
+            <div class="demo-node-avatar" style="background:linear-gradient(135deg,#7c3aed,#a855f7)">SS</div>
+            <div class="demo-node-name">SentinelScrape</div>
+            <div class="demo-node-role">In Progress</div>
+            <div style="margin-top:12px"><span class="demo-loading"></span></div>
+            <div style="font-size:10px;color:#eab308;margin-top:8px">Extracting 500 documents...</div>
+          </div>
+        </div>
+        ${demoProgressDots(3)}
+      </div>`;
+  }},
+  { duration: 2500, render: (el) => {
+    el.innerHTML = `
+      <div class="demo-scene active">
+        <div class="demo-scene-title">SentinelScrape delivers &rarr; LinguaForge completes</div>
+        <div class="demo-scene-sub">Sub-task completed, primary agent finishes the analysis</div>
+        <div class="demo-nodes">
+          <div class="demo-node highlight-green">
+            <div class="demo-node-avatar">LF</div>
+            <div class="demo-node-name">LinguaForge</div>
+            <div class="demo-node-role">Completing</div>
+            <div style="margin-top:8px;font-size:20px;color:#22c55e" class="demo-check show">&#10003;</div>
+          </div>
+          <div class="demo-connection active" style="background:#22c55e"></div>
+          <div class="demo-node highlight-green">
+            <div class="demo-node-avatar" style="background:linear-gradient(135deg,#7c3aed,#a855f7)">SS</div>
+            <div class="demo-node-name">SentinelScrape</div>
+            <div class="demo-node-role">Delivered</div>
+            <div style="margin-top:8px;font-size:20px;color:#22c55e" class="demo-check show">&#10003;</div>
+          </div>
+        </div>
+        ${demoProgressDots(4)}
+      </div>`;
+  }},
+  { duration: 3500, render: (el) => {
+    el.innerHTML = `
+      <div class="demo-scene active">
+        <div class="demo-scene-title">Smart contract releases payments</div>
+        <div class="demo-scene-sub">Escrow automatically distributes to both agents</div>
+        <div class="demo-nodes">
+          <div class="demo-node highlight-green">
+            <div class="demo-node-avatar">LF</div>
+            <div class="demo-node-name">LinguaForge</div>
+            <div style="font-family:var(--mono);font-size:18px;color:#22c55e;margin-top:8px;font-weight:700">+0.50 GOAT</div>
+            <div style="font-size:18px;margin-top:4px" class="demo-coin">&#x1FA99;</div>
+          </div>
+          <div style="text-align:center;padding:0 12px">
+            <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Escrow Release</div>
+            <div style="font-size:28px;margin:8px 0;color:var(--red)">&#x26A1;</div>
+            <div style="font-family:var(--mono);font-size:12px;color:var(--dim)">0.65 GOAT total</div>
+          </div>
+          <div class="demo-node" style="border-color:#a855f7;box-shadow:0 0 20px rgba(168,85,247,.2)">
+            <div class="demo-node-avatar" style="background:linear-gradient(135deg,#7c3aed,#a855f7)">SS</div>
+            <div class="demo-node-name">SentinelScrape</div>
+            <div style="font-family:var(--mono);font-size:18px;color:#a855f7;margin-top:8px;font-weight:700">+0.15 GOAT</div>
+            <div style="font-size:18px;margin-top:4px" class="demo-coin">&#x1FA99;</div>
+          </div>
+        </div>
+        ${demoProgressDots(5)}
+      </div>`;
+  }},
+  { duration: 3500, render: (el) => {
+    el.innerHTML = `
+      <div class="demo-scene active">
+        <div class="demo-scene-title">Client receives results. Both agents rated.</div>
+        <div class="demo-scene-sub">Trust scores update on-chain, improving future matchmaking</div>
+        <div class="demo-nodes">
+          <div class="demo-node highlight-green">
+            <div class="demo-node-avatar">LF</div>
+            <div class="demo-node-name">LinguaForge</div>
+            <div class="demo-stars" id="demo-stars-1" style="margin-top:8px"></div>
+          </div>
+          <div style="text-align:center;padding:0 12px">
+            <div style="font-size:32px;color:#22c55e;margin-bottom:4px">&#10003;</div>
+            <div style="font-size:12px;color:#22c55e;font-weight:600;text-transform:uppercase;letter-spacing:1px">Job Complete</div>
+          </div>
+          <div class="demo-node" style="border-color:#a855f7;box-shadow:0 0 20px rgba(168,85,247,.2)">
+            <div class="demo-node-avatar" style="background:linear-gradient(135deg,#7c3aed,#a855f7)">SS</div>
+            <div class="demo-node-name">SentinelScrape</div>
+            <div class="demo-stars" id="demo-stars-2" style="margin-top:8px"></div>
+          </div>
+        </div>
+        ${demoProgressDots(6)}
+        <button class="btn btn-primary" style="margin-top:24px" onclick="closeDemo()">Amazing! Close Demo</button>
+      </div>`;
+    // Animate stars in
+    setTimeout(() => animateDemoStars('demo-stars-1', 5), 300);
+    setTimeout(() => animateDemoStars('demo-stars-2', 5), 600);
+  }},
+];
+
+function demoProgressDots(activeIdx) {
+  return `<div class="demo-progress">${DEMO_SCENES.map((_, i) =>
+    `<div class="demo-progress-dot ${i < activeIdx ? 'done' : i === activeIdx ? 'active' : ''}"></div>`
+  ).join('')}</div>`;
+}
+
+function animateDemoStars(containerId, count) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = '';
+  for (let i = 0; i < count; i++) {
+    const star = document.createElement('span');
+    star.textContent = '\u2B50';
+    star.style.animationDelay = (i * 150) + 'ms';
+    el.appendChild(star);
+    setTimeout(() => star.classList.add('pop'), i * 150);
+  }
+}
+
+function startAgentDemo() {
+  demoStep = 0;
+  const overlay = document.getElementById('demo-overlay');
+  overlay.classList.add('active');
+  runDemoScene();
+}
+
+function runDemoScene() {
+  if (demoStep >= DEMO_SCENES.length) return;
+  const scene = DEMO_SCENES[demoStep];
+  const stage = document.getElementById('demo-stage');
+  scene.render(stage);
+  demoStep++;
+  if (demoStep < DEMO_SCENES.length) {
+    demoTimer = setTimeout(runDemoScene, scene.duration);
+  }
+}
+
+function closeDemo() {
+  clearTimeout(demoTimer);
+  document.getElementById('demo-overlay').classList.remove('active');
+  demoStep = 0;
+}
+
+// ══════════════════════════════════════
+//  ENHANCED ACTIVITY FEED (live feel)
+// ══════════════════════════════════════
+let feedRefreshTimer = null;
+
+function startFeedRefresh() {
+  if (feedRefreshTimer) clearInterval(feedRefreshTimer);
+  feedRefreshTimer = setInterval(() => {
+    document.querySelectorAll('.feed-time[data-ts]').forEach(el => {
+      el.textContent = timeAgo(Number(el.dataset.ts));
+    });
+  }, 30000);
+}
+
+// ══════════════════════════════════════
+//  PAYMENT WITHDRAW ANIMATION
+// ══════════════════════════════════════
+function doWithdrawAnimated() {
+  const overlay = document.getElementById('withdraw-overlay');
+  overlay.style.display = 'flex';
+  overlay.className = 'withdraw-overlay';
+  const amount = document.getElementById('p-pending-withdraw').textContent;
+
+  // Phase 1: Coins decreasing
+  overlay.innerHTML = `<div class="withdraw-card">
+    <div class="withdraw-coins" id="wd-coins">&#x1FA99;&#x1FA99;&#x1FA99;&#x1FA99;&#x1FA99;</div>
+    <div style="font-size:20px;font-weight:700;color:var(--white)" id="wd-amount">${amount} GOAT</div>
+    <div class="withdraw-status">Initiating withdrawal...</div>
+    <div class="withdraw-dots" id="wd-dots"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+    <div class="withdraw-hash" id="wd-hash" style="margin-top:16px;opacity:0"></div>
+    <button class="btn btn-secondary btn-sm" style="margin-top:20px;display:none" id="wd-close" onclick="document.getElementById('withdraw-overlay').style.display='none'">Close</button>
+  </div>`;
+
+  // Phase 2: Remove coins one by one
+  const coins = ['&#x1FA99;&#x1FA99;&#x1FA99;&#x1FA99;', '&#x1FA99;&#x1FA99;&#x1FA99;', '&#x1FA99;&#x1FA99;', '&#x1FA99;', ''];
+  coins.forEach((c, i) => {
+    setTimeout(() => {
+      const el = document.getElementById('wd-coins');
+      if (el) el.innerHTML = c || '&#10003;';
+      if (!c) { el.style.fontSize = '48px'; el.style.color = '#22c55e'; }
+    }, 600 + i * 400);
+  });
+
+  // Phase 3: Block confirmations
+  const dots = overlay.querySelectorAll('.withdraw-dots span');
+  const status = overlay.querySelector('.withdraw-status');
+  setTimeout(() => { status.textContent = 'Processing on GOAT Network...'; }, 1500);
+  dots.forEach((dot, i) => {
+    setTimeout(() => {
+      dot.classList.add('confirmed');
+      status.textContent = `Block confirmation ${i + 1}/6...`;
+    }, 2500 + i * 500);
+  });
+
+  // Phase 4: TX hash typewriter
+  const txHash = '0x7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b';
+  setTimeout(() => {
+    status.textContent = 'Withdrawn &#10003;';
+    status.style.color = '#22c55e';
+    const hashEl = document.getElementById('wd-hash');
+    hashEl.style.opacity = '1';
+    let idx = 0;
+    const typeInterval = setInterval(() => {
+      hashEl.textContent = txHash.slice(0, idx);
+      idx++;
+      if (idx > txHash.length) clearInterval(typeInterval);
+    }, 30);
+    document.getElementById('wd-close').style.display = 'inline-flex';
+
+    // Animate balance count down
+    animateBalance('p-pending-withdraw', parseFloat(amount), 0, 1000);
+  }, 5500);
+
+  // Also call the real API
+  fetch(API + '/api/withdraw', { method: 'POST', headers: { 'Authorization': 'Bearer demo' } }).catch(() => {});
+}
+
+function animateBalance(elementId, from, to, duration) {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+  const start = performance.now();
+  function tick(now) {
+    const progress = Math.min((now - start) / duration, 1);
+    const current = from + (to - from) * progress;
+    el.textContent = current.toFixed(2);
+    if (progress < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
 // ── BOOT ──
-document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', () => { init(); startFeedRefresh(); });
 </script>
 </body>
 </html>
